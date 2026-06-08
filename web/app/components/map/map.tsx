@@ -75,7 +75,7 @@ export default function MapaDepoimentos({ hideMarkers = false, hideTitle = false
     const loadReports = async () => {
       setIsLoading(true)
       try {
-        const data = await reportsClient.getAllReports('Approved')
+        const data = await reportsClient.getAllReports('')
         if (!isMounted) return
 
         const mapped = data.reduce<Depoimento[]>((acc, report) => {

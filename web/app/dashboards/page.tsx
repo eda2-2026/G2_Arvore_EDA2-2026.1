@@ -197,7 +197,7 @@ export default function DashboardPage() {
 
     //joga TODOS os dados do banco para dentro da árvore se auto-balancear
     reports.forEach(report => {
-      const timeKey = new Date(report.crimeDate).getTime();
+      const timeKey = new Date(report.createdDate).getTime();
       rbt.insert(timeKey, report);
     });
     const limitToFetch = treeLimit === 0 ? reports.length : treeLimit;
@@ -205,6 +205,13 @@ export default function DashboardPage() {
     //a árvore devolve apenas as X mais recentes
     return rbt.getLatest(limitToFetch);
   }, [reports, treeLimit]);
+    
+  const treeLimitOptions = useMemo(() => {
+    const options = Array.from({ length: 50 }, (_, i) => String(i + 1));
+    options.push("100", "Todas");
+    return options;
+  }, []);
+    
   useEffect(() => {
     let isMounted = true;
 
@@ -603,7 +610,7 @@ export default function DashboardPage() {
             />
             <FilterDropdown
               label="Ocorrências"
-              options={["10", "25", "50", "100", "Todas"]}
+              options={treeLimitOptions}
               selected={treeLimit === 0 ? "Todas" : String(treeLimit)}
               open={openFilter === "treeLimit"}
               onToggle={() => toggleFilter("treeLimit")}
