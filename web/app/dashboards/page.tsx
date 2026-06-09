@@ -1,6 +1,7 @@
 'use client';
 
 import Navbar from "../components/navbar/navbar";
+import { RedBlackTree } from "../../lib/utils/RedBlackTree";
 import { Merriweather } from "next/font/google";
 import { useState, useMemo, useEffect } from "react";
 import ReporterEthnicityBarChart from "../components/reporter-ethnicity-bar-chart/reporter-ethnicity-bar-chart";
@@ -65,7 +66,7 @@ type CrimeTypeEntry = {
   options: string[];
 };
 
-type FilterKey = "crimeGenre" | "crimeTypes" | "regions" | "years";
+type FilterKey = "crimeGenre" | "crimeTypes" | "regions" | "years"| "treeLimit";
 
 const getCrimeTypesForGenre = (crimeGenre: string, mapping: Record<string, CrimeTypeEntry>) =>
   mapping[normalizeText(crimeGenre)]?.options ?? [];
@@ -182,20 +183,42 @@ function FilterDropdown<T extends string | number>({
 
 //  COMPONENTE PRINCIPAL 
 export default function DashboardPage() {
+  const [treeLimit, setTreeLimit] = useState<number>(0);
   const [openFilter, setOpenFilter] = useState<FilterKey | null>(null);
   const [reports, setReports] = useState<ReportResponse[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [selectedFilters, setSelectedFilters] = useState<SelectedFilters | null>(null);
   const [hasInteracted, setHasInteracted] = useState(false);
+  const processedReports = useMemo(() => {
+    if (!reports || reports.length === 0) return [];
 
+    const rbt = new RedBlackTree();
+
+    //joga TODOS os dados do banco para dentro da árvore se auto-balancear
+    reports.forEach(report => {
+      const timeKey = new Date(report.createdDate).getTime();
+      rbt.insert(timeKey, report);
+    });
+    const limitToFetch = treeLimit === 0 ? reports.length : treeLimit;
+
+    //a árvore devolve apenas as X mais recentes
+    return rbt.getLatest(limitToFetch);
+  }, [reports, treeLimit]);
+    
+  const treeLimitOptions = useMemo(() => {
+    const options = Array.from({ length: 50 }, (_, i) => String(i + 1));
+    options.push("100", "Todas");
+    return options;
+  }, []);
+    
   useEffect(() => {
     let isMounted = true;
 
     const loadReports = async () => {
       setIsLoading(true);
       try {
-        const data = await reportsClient.getAllReports('Approved');
+        const data = await reportsClient.getAllReports('');
         if (!isMounted) {
           return;
         }
@@ -475,7 +498,7 @@ export default function DashboardPage() {
     const enforceYears = shouldFilterYears && selectedYearsSet.size > 0;
     const enforceRegions = shouldFilterRegions && selectedRegionsSet.size > 0;
 
-    return reports.filter(report => {
+    return processedReports.filter((report: ReportResponse) => {
       const date = new Date(report.crimeDate);
       const reportYear = Number.isNaN(date.getTime()) ? null : date.getFullYear();
       const reportCrimeType = report.crimeType?.trim();
@@ -508,7 +531,7 @@ export default function DashboardPage() {
 
       return matchesCrimeGenre && matchesCrimeTypes && matchesYears && matchesRegions;
     });
-  }, [reports, selectedFilters, crimeTypesByGenre, yearOptions, regionOptions]);
+  }, [processedReports, selectedFilters, crimeTypesByGenre, yearOptions, regionOptions]);
 
   if (!selectedFilters) {
     return (
@@ -546,7 +569,7 @@ export default function DashboardPage() {
             </div>
           )}
           {/* Filtros */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
             <FilterDropdown
               label="Tipo"
               options={crimeGenreOptions}
@@ -585,10 +608,25 @@ export default function DashboardPage() {
               onSelect={(option: number) => handleMultiSelect("years", option)}
               onSelectAll={(selectAll: boolean) => handleMultiSelectAll("years", selectAll)}
             />
+            <FilterDropdown
+              label="Ocorrências"
+              options={treeLimitOptions}
+              selected={treeLimit === 0 ? "Todas" : String(treeLimit)}
+              open={openFilter === "treeLimit"}
+              onToggle={() => toggleFilter("treeLimit")}
+              onSelect={(option: string) => {
+                if (option === "Todas") {
+                  setTreeLimit(0); // 0 indica que a árvore trará tudo
+                } else {
+                  setTreeLimit(Number(option));
+                }
+                setOpenFilter(null); // Fecha o dropdown após selecionar
+              }}
+            />
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-4 flex-1">
-            
+
             {/* --- Coluna Esquerda --- */}
             <div className="lg:col-span-1 flex flex-col gap-4">
               <div className="bg-[#1F1F1F] shadow-xl shadow-black/50 flex flex-col justify-end items-center rounded-lg p-6 h-auto min-h-[144px]">
@@ -604,10 +642,10 @@ export default function DashboardPage() {
 
             {/* --- Coluna Direita --- */}
             <div className="lg:col-span-3 flex flex-col lg:flex-row gap-4">
-              
+
               {/* Subcoluna Esquerda */}
               <div className="w-full lg:w-2/3 flex flex-col gap-4">
-                
+
                 {/* Gráfico Principal */}
                 <div className="bg-[#1F1F1F] shadow-xl shadow-black/50 rounded-lg p-6 h-96 flex flex-col">
                   <p className="mb-2">Número de denúncias por mês</p>
@@ -622,14 +660,14 @@ export default function DashboardPage() {
                     <p className="text-white">Distribuição por Identidade de Gênero</p>
                     <div className="flex-1 w-full h-full">
                       <ReporterGenderIdentityPieChart data={filteredData} />
-                    </div> 
+                    </div>
                   </div>
                   <div className="bg-[#1F1F1F] shadow-xl shadow-black/50 rounded-lg p-6 h-auto min-h-[300px]">
                     <p>Distribuição por Orientação Sexual</p>
                     <ReporterSexualOrientationDistribution data={filteredData} />
                   </div>
                 </div>
-              </div> 
+              </div>
 
               {/* Subcoluna Direita */}
               <div className="w-full lg:w-1/3 flex flex-col gap-4">
