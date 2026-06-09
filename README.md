@@ -1,179 +1,57 @@
-# **Visão Geral do Produto: Amaterasu - Safe Zone**
+# Safe Zone
 
-![Safezone](./safezone.jpg)
+**Número da Lista:** Grupo 2  
+**Conteúdo da Disciplina:** Árvores Balanceadas (Árvore Rubro-Negra)
 
-[![Acessar o Site](https://img.shields.io/badge/Acessar_o_Site-0078D4?style=for-the-badge&logo=microsoft-edge&logoColor=white)](https://zealous-coast-056b8750f.3.azurestaticapps.net/)
-[![Acessar Documentação](https://img.shields.io/badge/Acessar_Documentação-0078D4?style=for-the-badge&logo=github&logoColor=white)](https://jj-viana.github.io/docs-safe-zone/)
+## 👥 Equipe - Grupo 2
 
-O **Amaterasu - Safe Zone** é uma aplicação web em formato de dashboard projetada para analisar e processar dados sobre criminalidade e insegurança no Distrito Federal e entorno. O objetivo é informar os cidadãos, facilitar a denúncia de ocorrências de forma menos burocrática e auxiliar na tomada de decisões mais direcionadas por parte dos órgãos competentes.
+Dupla responsável pela implementação dos algoritmos e estruturas de dados na aplicação.
 
-## **Problema a ser Solucionado**
+| Foto | Nome | Matrícula |
+|------|------|-----------|
+| <img src="https://github.com/giovannafg.png" alt="Giovanna" width="80" /> | **[Giovanna Felipe](https://github.com/giovannafg)** | 241038998 |
+| <img src="https://github.com/andrehsb.png" alt="André" width="80" /> | **[André Henrique](https://github.com/andrehsb)** | 241025149 |
 
-Com a velocidade da internet, a disseminação de notícias sobre perigos e crimes tornou-se extremamente rápida. O produto visa utilizar essa agilidade para criar uma comunicação democrática sobre os perigos, permitindo que a população seja alertada sobre a incidência de problemas em regiões específicas. A plataforma busca quebrar a burocracia, permitindo o registro de relatos informais que muitas vezes não se enquadram em um boletim de ocorrência tradicional, como locais mal iluminados, movimentações suspeitas ou situações de assédio.
+---
 
-## **Objetivos e Diferenciais**
+## 📖 Sobre
 
-O principal objetivo do projeto é coletar e processar denúncias relacionadas à segurança no DF, garantindo sempre a privacidade e o anonimato dos usuários. Após o registro de uma denúncia, a plataforma informará ao usuário sobre como ele pode agir diante daquela situação.
+O **Safe Zone** é uma aplicação web em formato de dashboard projetada para analisar e processar dados sobre criminalidade e insegurança no Distrito Federal e entorno.
 
-Como objetivos secundários, o projeto visa:
-* Permitir que órgãos competentes (como CEB, corpo de bombeiros e polícia civil) utilizem os dados visuais dos dashboards para criar estratégias mais eficazes e direcionadas.
-* Alertar a população sobre áreas de risco ou perigos recentes, melhorando o acesso à informação.
+O objetivo é informar os cidadãos, facilitar a denúncia de ocorrências de forma menos burocrática e auxiliar na tomada de decisões mais direcionadas por parte dos órgãos competentes, garantindo o anonimato dos usuários.
 
-## **Perfis de Usuário**
+---
 
-O sistema contará com dois perfis de acesso principais:
-* **Administrador:** Terá acesso para controlar os dashboards e gerenciar os dados do banco, podendo remover informações se necessário.
-* **Usuário:** Poderá visualizar os dados, criar novos relatos no mapa interativo e consultar o dashboard de informações.
+## 📸 Screenshots
 
-## Diagrama do Produto
+![Demonstração do Dashboard](./dash.jpeg)
+![Demonstração do Dashboard](./board.jpeg)
 
-O diagrama abaixo representa, em alto nível, os atores, o Web Dashboard exposto pelo Next.js, e os principais componentes na Azure: Azure Static Web Apps (Next.js com SSR/SSG/ISR), APIs .NET no App Service (Controllers/Services/Middleware), Cosmos DB e Application Insights.
+---
 
-```mermaid
-flowchart LR
-	%% Atores
-	subgraph Users
-		U["Usuário (Cidadão)"]
-		Admin["Administrador"]
-		Agencies["Órgãos competentes"]
-	end
+## 🛠️ Tecnologias
 
-	%% Azure e Camadas
-	subgraph Azure
-		subgraph SWA["Azure Static Web Apps (web)"]
-			Next["Next.js (SSR/SSG/ISR)"]
-			Dashboard["Web Dashboard (React/Tailwind)"]
-		end
+| Categoria | Tecnologia |
+|------------|------------|
+| Framework Frontend | Next.js (App Router, SSR/SSG) |
+| Linguagem | TypeScript e C# (.NET 9) |
+| Estilização | Tailwind CSS |
+| Backend API | ASP.NET Core API |
+| Banco de Dados | Azure Cosmos DB (NoSQL) |
 
-		subgraph ApiApp["App Service (api-core)"]
-			API[".NET API
-             Controllers | Services | Middleware"]
-		end
+---
 
-		Cosmos[("Azure Cosmos DB
-		(No SQL)")]
-		AppInsights[("Application Insights")]
-	end
-
-	%% Fluxos principais
-	U -->|HTTPS| Dashboard
-	Admin -->|HTTPS| Dashboard
-	Agencies -->|HTTPS| Dashboard
-	Next -->|expõe| Dashboard
-	Dashboard -->|Interação| Next
-	Next -->|chamadas de API| API
-
-	%% Regras de negócio e dados
-	API -->|Dados| Cosmos
-	API -->|Telemetria/Monitoramento| AppInsights
-
-	%% Estilos
-	classDef svc fill:#e8f3ff,stroke:#2b6cb0,stroke-width:1px;
-	classDef data fill:#fff7e6,stroke:#b7791f,stroke-width:1px;
-	classDef sec fill:#f0fff4,stroke:#2f855a,stroke-width:1px;
-	classDef user fill:#f7fafc,stroke:#4a5568,stroke-width:1px;
-
-	class Next,API,Dashboard svc;
-	class Cosmos data;
-	class AppInsights sec;
-	class U,Admin,Agencies user;
-```
-
-Legenda rápida:
-- Frontend: Next.js hospedado em Azure Static Web Apps, renderiza React/Tailwind e realiza chamadas server-side para a API .NET (evitando CORS). Client-side fetch é opcional e requer CORS.
-- .NET API (App Service): controllers finos; regras de negócio em services; middleware de erros padronizados.
-- Cosmos DB: persistência (Core SQL), propriedades camelCase.
-- Segredos: apenas variáveis de ambiente (App Settings / SWA Configuration).
-- Application Insights: telemetria entre serviços.
-
-
-## **Tecnologias Utilizadas**
-
-A equipe de desenvolvimento utilizará as seguintes tecnologias para a construção do produto:
-* **Frontend (Web):** Next.js (App Router, SSR/SSG/ISR), React e Tailwind CSS.
-* **APIs:** C#/.NET 9 (Controllers finos; regras em Services; Middleware central de erros/logs).
-* **Hospedagem:** Azure Static Web Apps (Next.js) e Azure App Service (APIs .NET).
-* **Banco de Dados:** Azure Cosmos DB (Core SQL), com propriedades em camelCase.
-* **Segurança e Segredos:** variáveis de ambiente (App Settings, SWA Configuration).
-* **Observabilidade:** Azure Application Insights.
-* **Metodologia:** Scrum, com sprints semanais.
-* **Ferramentas:** Azure, GitHub Actions, Discord, Google Docs, GitHub, Git, VSCode, entre outras.
-
-## Como começar (dev)
-
-Esta seção descreve rapidamente como configurar e iniciar o repositório localmente para desenvolvimento, seguindo as convenções do projeto.
-
-### Estrutura do repositório
-
-```
-.
-├─ web/   # Next.js (App Router) + Tailwind
-└─ api/   # ASP.NET Core 9 (Cosmos DB / App Insights)
-```
-
-### Pré-requisitos
-
-- Node.js 18+ (recomendado 20+)
-- PNPM/NPM/Yarn (ex.: npm)
-- .NET SDK 9.0+
-- Conta Azure
+## 🚀 Instalação Rápida
 
 ### Clonar o repositório
 
-Use HTTPS:
-
 ```bash
-# HTTPS
 git clone https://github.com/jj-viana/safe-zone.git
 cd safe-zone
 ```
 
-### Configuração
+### 1. Configurar e rodar a API
 
-1) API (.NET)
-
-- No desenvolvimento local, configure via arquivo: edite `api/appsettings.Development.json` (não versionado por padrão pelo `.gitignore`). Preencha os campos mínimos:
-
-```json
-{
-	"CosmosDB": {
-		"ConnectionString": "<sua-cosmos-connection-string>",
-		"DatabaseId": "ReportsDb",
-		"ContainerId": "Reports"
-	},
-	"ApplicationInsights": {
-		"ConnectionString": "<opcional>"
-	},
-	"Cors": {
-		"AllowedOrigins": [
-			"https://localhost:3000"
-		]
-	}
-}
-```
-
-- Porta/local por padrão (launchSettings):
-		- HTTP: http://localhost:5206
-		- HTTPS: https://localhost:7040
-
-- CORS: ajuste `Cors:AllowedOrigins` no `appsettings.Development.json` para incluir o front (`https://localhost:3000`).
-
-2) Web (Next.js)
-
-- A base de URL da API é lida de `NEXT_PUBLIC_API_BASE_URL`. O cliente já usa por padrão `http://localhost:5206`.
-- Se precisar customizar, crie `web/.env.local`:
-
-```bash
-cd web
-npm install
-printf "NEXT_PUBLIC_API_BASE_URL=http://localhost:5206\n" > .env.local
-```
-
-### Subindo os serviços
-
-Em dois terminais:
-
-1) API
 ```bash
 cd api
 dotnet restore
@@ -181,23 +59,228 @@ dotnet build
 dotnet run
 ```
 
-2) Web
+### 2. Configurar e rodar o Frontend (em outro terminal)
+
 ```bash
-cd web
+cd ../web
 npm install
-npm run build
-npm run lint
 npm run dev
 ```
 
-### Verificação rápida
+---
 
-- Front-end: http://localhost:3000
-- Swagger (API):
-	- https://localhost:7040/swagger
-	- ou http://localhost:5206/swagger
+## 🔒 Variáveis de Ambiente
 
-## Documentação e convenções
+### Frontend (`web/.env.local`)
 
-- Documentação geral: veja a pasta `docs/` (ex.: [`docs/README.md`](./docs/README.md))
-- Convenções do projeto (estrutura, branches, padrões): [`docs/conventions.md`](./docs/conventions.md)
+Crie um arquivo `.env.local` na pasta `web`:
+
+```env
+NEXT_PUBLIC_API_BASE_URL=http://localhost:5206
+```
+
+### Backend (`api/appsettings.Development.json`)
+
+Crie um arquivo `appsettings.Development.json` na pasta `api`:
+
+```json
+{
+  "CosmosDB": {
+    "ConnectionString": "<SUA_CONNECTION_STRING_AQUI>",
+    "DatabaseId": "ReportsDb",
+    "ContainerId": "Reports"
+  },
+  "Cors": {
+    "AllowedOrigins": [
+      "http://localhost:3000"
+    ]
+  }
+}
+```
+
+---
+
+## ▶️ Scripts Úteis
+
+### Frontend (`/web`)
+
+```bash
+npm run dev      # servidor de desenvolvimento (http://localhost:3000)
+npm run build    # compila a aplicação para produção
+npm run lint     # verifica erros no código TypeScript
+```
+
+### Backend (`/api`)
+
+```bash
+dotnet run       # inicia a API na porta 5206
+```
+
+---
+
+## 💻 Uso
+
+Ao acessar a aplicação, o usuário (cidadão) pode:
+
+- Visualizar os dados de criminalidade;
+- Acessar o dashboard interativo com estatísticas;
+- Criar novos relatos no mapa de forma anônima.
+
+Administradores autenticados possuem acesso a uma área restrita para:
+
+- Moderar denúncias enviadas pelos usuários;
+- Aprovar ou rejeitar relatos pendentes;
+- Alimentar as estatísticas públicas com dados validados.
+
+---
+
+## 🔗 Outros
+
+  - **VÍDEO DE APRESENTAÇÃO:**  
+  https://youtu.be/4qAmx8q48M4
+
+---
+
+
+# 🌳 Estrutura de Dados Implementada para Otimização
+
+## Árvore Rubro-Negra (Red-Black Tree)
+
+O projeto utiliza uma **Árvore Rubro-Negra (Red-Black Tree)** executada diretamente na memória do frontend para organizar, processar e filtrar cronologicamente as denúncias carregadas do banco de dados.
+
+---
+
+## Justificativa da Utilização
+
+Na arquitetura da aplicação, o frontend carrega as ocorrências e precisa organizá-las dinamicamente para alimentar os gráficos e filtros.
+
+Uma árvore binária de busca comum (BST) poderia sofrer degradação severa de desempenho dependendo da ordem dos dados recebidos.
+
+### Problema da Árvore Binária Simples (BST)
+
+Se o banco de dados retornar os relatórios já ordenados por data (do mais antigo para o mais recente), cada novo elemento seria inserido sempre à direita do anterior.
+
+Nesse cenário, a árvore deixaria de possuir uma estrutura balanceada e passaria a se comportar como uma lista encadeada:
+
+```text
+1
+ \
+  2
+   \
+    3
+     \
+      4
+```
+
+Como consequência:
+
+- Altura da árvore: `O(n)`
+- Busca: `O(n)`
+- Inserção: `O(n)`
+
+Com milhares de registros, isso poderia impactar significativamente a experiência do usuário.
+
+---
+
+### Solução com Árvore Rubro-Negra
+
+A Árvore Rubro-Negra utiliza regras de coloração e rotações para garantir balanceamento automático.
+
+Independentemente da ordem em que os dados são recebidos:
+
+- Ordenados;
+- Invertidos;
+- Aleatórios;
+
+a árvore mantém altura próxima do ideal.
+
+Assim, as operações de:
+
+- Busca;
+- Inserção;
+- Remoção;
+
+mantêm complexidade:
+
+```text
+O(log n)
+```
+
+garantindo excelente desempenho mesmo com grandes volumes de denúncias.
+
+---
+
+## Onde a Árvore é Utilizada
+
+### Dashboard Principal
+
+Ao carregar a página principal (`http://localhost:3000`), todas as ocorrências validadas são inseridas na Árvore Rubro-Negra.
+
+A chave utilizada para ordenação é:
+
+```typescript
+createdDate
+```
+
+convertida para milissegundos, permitindo a ordenação cronológica dos registros.
+
+---
+
+### Filtro de Ocorrências Recentes
+
+Foi implementada uma travessia personalizada da árvore utilizando:
+
+```text
+Direita → Raiz → Esquerda
+```
+
+(Travessia Em-Ordem Reversa)
+
+Essa estratégia permite recuperar rapidamente os registros mais recentes.
+
+Os filtros:
+
+- Top 10 ocorrências mais recentes;
+- Top 50 ocorrências mais recentes;
+
+utilizam essa travessia.
+
+---
+
+### Otimização Utilizada
+
+A travessia possui uma condição de parada antecipada.
+
+Exemplo:
+
+- Se o usuário solicitar apenas as 10 ocorrências mais recentes;
+- Após encontrar os 10 registros desejados;
+- A busca é interrompida imediatamente.
+
+Dessa forma, evita-se percorrer toda a árvore desnecessariamente.
+
+---
+
+## Benefícios Obtidos
+
+✅ Busca eficiente em grandes volumes de dados
+
+✅ Complexidade garantida de `O(log n)`
+
+✅ Balanceamento automático
+
+✅ Filtragem rápida de ocorrências recentes
+
+✅ Menor custo de processamento no navegador
+
+✅ Melhor desempenho na atualização dos gráficos React
+
+✅ Escalabilidade para milhares de denúncias
+
+---
+
+## Conclusão
+
+A utilização da **Árvore Rubro-Negra** permitiu organizar cronologicamente as denúncias de forma eficiente e escalável.
+
+Seu balanceamento automático garante desempenho consistente independentemente da ordem dos dados recebidos do banco de dados, tornando possível alimentar os filtros e gráficos do dashboard com baixa latência e excelente experiência para o usuário.
